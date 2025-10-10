@@ -9,12 +9,11 @@ Gem::Specification.new do |spec|
   spec.authors = ['Thomas Tych']
   spec.email   = ['thomas.tych@gmail.com']
 
-  spec.summary       = 'TODO: Write a short summary, because Rubygems requires one.'
-  spec.description   = 'TODO: Write a longer description or delete this line.'
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = 'fluentd plugin to query Apache Druid'
+  spec.homepage      = 'https://gitlab.com/ttych/fluent-plugin-druid-query'
   spec.license       = 'Apache-2.0'
 
-  spec.required_ruby_version = '>= 3.1.0'
+  spec.required_ruby_version = '>= 3.2.0'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 
@@ -41,5 +40,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'test-unit', '~> 3.6', '>= 3.6.7'
   spec.add_development_dependency 'timecop', '~> 0.9.10'
 
+  spec.add_dependency 'druid_client', '~> 0.1'
   spec.add_dependency 'fluentd', ['>= 0.14.10', '< 2']
 end

@@ -4,8 +4,9 @@ plugins:
   - rubocop-rake
 
 AllCops:
-  TargetRubyVersion: 3.1
+  TargetRubyVersion: 3.2
   NewCops: enable
+  Exclude: []
 
 Gemspec/DevelopmentDependencies:
   EnforcedStyle: gemspec
@@ -20,6 +21,7 @@ Metrics/BlockLength:
 
 Metrics/ClassLength:
   Exclude:
+    - lib/fluent/plugin/in_druid_query.rb
     - test/**/*.rb
 
 Metrics/MethodLength:
