@@ -34,6 +34,30 @@ $ bundle
 
 ### example
 
+```
+<source>
+  @type druid_query
+
+  druid_url http://localhost:4567
+  druid_user user
+  druid_password password
+
+  interval 5
+
+  <query>
+    sql select name, age from test
+    subtag test
+    cache false
+    metadata id:query1
+    generate_record true
+    generate_info true
+  </query>
+</source>
+
+<match druid_query**>
+  @type stdout
+</match>
+```
 
 ## Copyright
 
