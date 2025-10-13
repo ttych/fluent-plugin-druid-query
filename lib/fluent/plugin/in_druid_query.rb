@@ -160,9 +160,10 @@ module Fluent
           'timestamp' => query_time.to_time.utc.iso8601(3),
           'status' => response.success? ? 'success' : 'failure',
           'status_code' => response.status_code,
-          'query_duration' => response.duration,
-          'response_rows_count' => response.body.size
-        }.merge(query.metadata)
+          'query_duration' => response.duration
+        }
+        info_record.update({ 'response_rows_count' => response.body.size }) if response.success?
+        info_record.update(query.metadata)
         router.emit(current_tag, query_time, info_record)
       end
     end

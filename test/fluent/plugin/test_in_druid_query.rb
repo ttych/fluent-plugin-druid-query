@@ -182,7 +182,9 @@ class DruidQueryInputTest < Test::Unit::TestCase
         assert_equal emitted_event[2], records[i].merge({ 'query_id' => '1' })
       end
     end
+  end
 
+  sub_test_case 'run_queries information' do
     test 'it emits returned response information' do
       test_query_conf = [
         '<query>',
@@ -221,6 +223,47 @@ class DruidQueryInputTest < Test::Unit::TestCase
         'status' => 'success',
         'status_code' => 200,
         'response_rows_count' => 1,
+        'timestamp' => TEST_FLUENT_TIME.to_time.utc.iso8601(3)
+      }
+    end
+
+    test 'it emits returned response information on error' do
+      test_query_conf = [
+        '<query>',
+        "sql #{SQL_QUERY}",
+        'generate_record false',
+        'generate_info true',
+        '</query>'
+      ]
+      test_conf = generate_conf(query_conf: test_query_conf)
+      driver = create_driver(test_conf)
+      input = driver.instance
+
+      records = [{ test3: 'test3' }]
+      response = DruidClient::Api::Response.new(
+        status_code: 400,
+        body: records,
+        duration: -1
+      )
+      input.druid_client.sql.expects(:query).with(
+        query: SQL_QUERY,
+        header: false,
+        context: {
+          useCache: true,
+          populateCache: true
+        }
+      ).returns(response)
+
+      Fluent::EventTime.stubs(:now).returns(TEST_FLUENT_TIME)
+      input.run_queries
+      emitted_events = driver.events
+
+      assert_equal 1, emitted_events.size
+      assert_equal emitted_events[0][0], input.tag
+      assert_equal emitted_events[0][2], {
+        'query_duration' => -1,
+        'status' => 'failure',
+        'status_code' => 400,
         'timestamp' => TEST_FLUENT_TIME.to_time.utc.iso8601(3)
       }
     end
