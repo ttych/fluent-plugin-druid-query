@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name    = 'fluent-plugin-druid-query'
-  spec.version = '0.1.0'
+  spec.version = '0.1.1'
   spec.authors = ['Thomas Tych']
   spec.email   = ['thomas.tych@gmail.com']
 
