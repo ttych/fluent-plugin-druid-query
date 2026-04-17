@@ -56,7 +56,7 @@ module Fluent
       desc 'druid user'
       config_param :druid_user, :string, default: DEFAULT_DRUID_USER
       desc 'druid password'
-      config_param :druid_password, :string, default: DEFAULT_DRUID_PASSWORD
+      config_param :druid_password, :string, secret: true, default: DEFAULT_DRUID_PASSWORD
       desc 'druid verify ssl'
       config_param :druid_verify_ssl, :bool, default: DEFAULT_DRUID_VERIFY_SSL
       desc 'druid user agent'
