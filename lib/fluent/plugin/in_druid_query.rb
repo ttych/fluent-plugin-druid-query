@@ -39,7 +39,8 @@ module Fluent
 
       DEFAULT_CA_CERT = nil
 
-      DEFAULT_QUERY_CACHE = true
+      DEFAULT_QUERY_CACHE = nil
+      DEFAULT_QUERY_PRIORITY = nil
       DEFAULT_QUERY_SUBTAG = nil
       DEFAULT_QUERY_GENERATE_RECORD = true
       DEFAULT_QUERY_GENERATE_INFO = false
@@ -70,6 +71,7 @@ module Fluent
       config_section :query, param_name: :queries, multi: true do
         config_param :sql, :string
         config_param :cache, :bool, default: DEFAULT_QUERY_CACHE
+        config_param :priority, :integer, default: DEFAULT_QUERY_PRIORITY
         config_param :subtag, :string, default: DEFAULT_QUERY_SUBTAG
         config_param :metadata, :hash, value_type: :string, default: {}
         config_param :generate_record, :bool, default: DEFAULT_QUERY_GENERATE_RECORD
@@ -114,17 +116,20 @@ module Fluent
         response = druid_client.sql.query(
           query: query.sql,
           header: false,
-          context: query_cache_context(use_cache: query.cache)
+          context: query_context(use_cache: query.cache, priority: query.priority)
         )
         emit_query_records(query_time: query_time, query: query, response: response)
         emit_query_info(query_time: query_time, query: query, response: response)
       end
 
-      def query_cache_context(use_cache: true)
+      def query_context(use_cache: true, priority: 0)
         {
           useCache: use_cache,
-          populateCache: use_cache
-        }
+          populateCache: use_cache,
+          useResultLevelCache: use_cache,
+          populateResultLevelCache: use_cache,
+          priority: priority
+        }.compact
       end
 
       def druid_client

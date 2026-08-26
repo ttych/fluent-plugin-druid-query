@@ -67,8 +67,26 @@ class DruidQueryInputTest < Test::Unit::TestCase
   end
 
   sub_test_case 'run_queries' do
-    test 'it call druid_client with expected query' do
+    test 'it calls druid_client with expected query' do
       driver = create_driver
+      input = driver.instance
+
+      input.druid_client.sql.expects(:query).with(
+        query: SQL_QUERY,
+        header: false,
+        context: {}
+      ).returns([])
+      input.run_queries
+    end
+
+    test 'it calls druid_client with expected query cache context' do
+      query_conf = [
+        '<query>',
+        "sql #{SQL_QUERY}",
+        'cache true',
+        '</query>'
+      ].freeze
+      driver = create_driver(generate_conf(query_conf: query_conf))
       input = driver.instance
 
       input.druid_client.sql.expects(:query).with(
@@ -76,7 +94,29 @@ class DruidQueryInputTest < Test::Unit::TestCase
         header: false,
         context: {
           useCache: true,
-          populateCache: true
+          populateCache: true,
+          useResultLevelCache: true,
+          populateResultLevelCache: true
+        }
+      ).returns([])
+      input.run_queries
+    end
+
+    test 'it calls druid_client with expected query priority context' do
+      query_conf = [
+        '<query>',
+        "sql #{SQL_QUERY}",
+        'priority 10',
+        '</query>'
+      ].freeze
+      driver = create_driver(generate_conf(query_conf: query_conf))
+      input = driver.instance
+
+      input.druid_client.sql.expects(:query).with(
+        query: SQL_QUERY,
+        header: false,
+        context: {
+          priority: 10
         }
       ).returns([])
       input.run_queries
@@ -95,10 +135,7 @@ class DruidQueryInputTest < Test::Unit::TestCase
       input.druid_client.sql.expects(:query).with(
         query: SQL_QUERY,
         header: false,
-        context: {
-          useCache: true,
-          populateCache: true
-        }
+        context: {}
       ).returns(response)
 
       input.run_queries
@@ -130,10 +167,7 @@ class DruidQueryInputTest < Test::Unit::TestCase
       input.druid_client.sql.expects(:query).with(
         query: SQL_QUERY,
         header: false,
-        context: {
-          useCache: true,
-          populateCache: true
-        }
+        context: {}
       ).returns(response)
 
       input.run_queries
@@ -167,10 +201,7 @@ class DruidQueryInputTest < Test::Unit::TestCase
       input.druid_client.sql.expects(:query).with(
         query: SQL_QUERY,
         header: false,
-        context: {
-          useCache: true,
-          populateCache: true
-        }
+        context: {}
       ).returns(response)
 
       input.run_queries
@@ -206,10 +237,7 @@ class DruidQueryInputTest < Test::Unit::TestCase
       input.druid_client.sql.expects(:query).with(
         query: SQL_QUERY,
         header: false,
-        context: {
-          useCache: true,
-          populateCache: true
-        }
+        context: {}
       ).returns(response)
 
       Fluent::EventTime.stubs(:now).returns(TEST_FLUENT_TIME)
@@ -248,10 +276,7 @@ class DruidQueryInputTest < Test::Unit::TestCase
       input.druid_client.sql.expects(:query).with(
         query: SQL_QUERY,
         header: false,
-        context: {
-          useCache: true,
-          populateCache: true
-        }
+        context: {}
       ).returns(response)
 
       Fluent::EventTime.stubs(:now).returns(TEST_FLUENT_TIME)
